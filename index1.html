@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Document</title>
+</head>
+<body>
+	<div id = "error-container"></div>
+      <!-- <input id = "name" type = "text" name = "name" value = "" 
+         placeholder = "Nhập tên!"> -->
+      <button type = "button" name = "button" onClick = "signup()">
+         Đăng ký
+      </button>
+      <button type="button" name = "button1" onClick="login()">Đăng nhập</button>
+      <p id="display" name = "display"></p>
+</body>
+<script>
+	function login(){
+            document.body.innerHTML='<input type = "text" id = "username" placeholder = "Tên"><br>\
+            <input type = "password" id = "password" placeholder = "Mật khẩu" ><br>\
+            <button type="button" name="button" onClick="sendRequest()">Đăng nhập</button>';
+      }
+      function signup(){
+            document.body.innerHTML='<div id="error-container"></div>\
+            <input type = "text" id = "setname" placeholder = "Tên"><br>\
+            <input type = "text" id = "password" placeholder = "Mật khẩu"><br>\
+            <button type="button" name="button" onClick="setUsername()">Gửi</button>';
+      }
+</script>
+</html>

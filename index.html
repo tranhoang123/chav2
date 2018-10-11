@@ -1,0 +1,121 @@
+
+<!DOCTYPE html>
+<html>
+   <head>
+      <title>Hello world</title>
+      
+   </head>
+   
+   <script src = "/socket.io/socket.io.js"></script>
+   <script>
+         var socket = io();
+         function setUsername(){
+            console.log(document.getElementById("setName").value);
+      	     if(document.getElementById("setName").value ==="" && document.getElementById("password").value==="") { // kiểm tra tên có hợp lệ không
+      		       document.getElementById("error-container").innerHTML="Tên Không hợp lệ";
+      	     }
+      	else{
+      		//document.getElementById("message-container").innerHTML="đặt tên thành công";
+      		socket.emit('setUsername', 
+               {
+               username : document.getElementById("setName").value,
+               password : document.getElementById("password").value
+      	     }
+            );
+            // console.log(document.getElementById("setName").value);
+            }
+         }
+         function sendRequest(){
+            console.log(document.getElementById("passwordEnter").value);
+            socket.emit("checkUsername",  {
+               username: document.getElementById("usernameExisted").value,
+               password: document.getElementById("passwordEnter").value
+            });
+            // console.log("da phat su kien");
+         }
+
+         socket.on("logged", function(data){
+            document.body.innerHTML='<div>Đăng nhập thành công.</div>'
+         })
+
+         socket.on("logFail", function(data){
+            document.body.innerHTML='<div>Đăng nhập thất bại, thử lại.</div>\
+            <button type="button" name="button2" onClick="login()">Thử lại</button>';
+         })
+
+      	var user;
+      	//var colorUser;
+      	socket.on('existedName', function(data){ // bắt sự kiện 'existedName'
+      		document.getElementById("error-container").innerHTML=data;
+      	})
+
+      	socket.on('setName', function(data){ //bắt sự kiện 'setName'
+      		user = data.username;
+      		//colorUser = data.colorUser;
+      		document.body.innerHTML='<div>Bắt đầu chat.</div>\
+            <button type="button" name="button2" onClick="startChat()">Chat nào</button>';
+      	})
+
+         socket.on("registed", function(data){
+            document.body.innerHTML='<div > đăng ký thành công </div>\
+            <button type="button" name="button2" onClick="startChat">Bắt đầu chat</button>'
+         })
+
+      	function sendMessage(){
+      		var msg = document.getElementById("message").value;
+      		if(msg){
+      			socket.emit("sendMessage", {user:user, message: msg}); // phát sự kiện "sendMessage"
+      		}
+      		document.getElementById("message").value=""; // đặt lại giá trị sau khi nhập tin nhắn về ""
+      	}
+
+         function startChat(){
+            socket.emit("loadMessage");
+            document.body.innerHTML='<div style="">\
+            <div id = "message-container" style = " height:270px; width:300px; overflow:auto; border:1px solid black; background-color:#7bed9f"></div>\
+            <div><p id="notify" style="border:1px solid black; background-color:#1B9CFC; width:150px; text-align:center"></p></div></div>\
+            <input type = "text" id = "message" style="border:1px solid blue; border-radius: 5px; width:256px ">\
+            <button type="button" name="button" onClick="sendMessage()">Gửi</button>'       
+         }
+
+         socket.on("tranferData", function(data){
+            // console.log(typeof data);
+            data.logs.forEach(function(key){
+               document.getElementById("message-container").innerHTML += '<div><b>'+key.username+':</b>'+key.content+ '</div>'
+            })
+         })
+         socket.on("numberOnline", function(data){
+            document.getElementById("notify").innerHTML = data.number + " người đang online";
+         })
+      	socket.on('newmsg', function(data){ // đợi gói tin nhắn tới
+      		if(user){
+      			document.getElementById("message-container").innerHTML += '<div><b>'+data.user+':</b>'+data.message+ '</div>'
+      		}
+      	})
+   </script>
+   <script>
+         function login(){
+            document.body.innerHTML='<input type = "text" id = "usernameExisted" placeholder = "Tên"><br>\
+            <input type = "password" id = "passwordEnter" placeholder = "Mật khẩu" ><br>\
+            <button type="button" name="button" onClick="sendRequest()">Đăng nhập</button>';
+         }
+         function signup(){
+            document.body.innerHTML='<div id="error-container"></div>\
+            <input type = "text" id = "setName" placeholder = "Tên"><br>\
+            <input type = "text" id = "password" placeholder = "Mật khẩu"><br>\
+            <button type="button" name="button" onClick="setUsername()">Gửi</button>';
+         }
+
+      </script>
+   <body>
+      <div>
+      <div id = "error-container"></div>
+      <div ><h2 style="color: red"> Chào mừng đến với kênh chat của tôi</h3></div>
+      <button type = "button" name = "button" onClick ="signup()" style="text-align: center">
+         Đăng ký
+      </button>
+      <button type="button" name = "button1" onClick="login()" style="text-align: center">Đăng nhập</button>
+      <p id="display" name = "display"></p>
+   </div>
+   </body>
+</html>
